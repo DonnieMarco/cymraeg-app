@@ -92,9 +92,20 @@ function thirdPersonPresent(english: string): string {
 }
 
 function presEng(p: Person, eng: string): string {
+  if (eng === 'be able to') {
+    const be = (p === 'e' || p === 'hi') ? 'is' : (p === 'i' ? 'am' : 'are');
+    return `${SUBJ[p]} ${be} able to`;
+  }
   return (p === 'e' || p === 'hi')
     ? `${SUBJ[p]} ${thirdPersonPresent(eng)}`
     : `${SUBJ[p]} ${eng}`;
+}
+
+function imperfEng(p: Person, eng: string): string {
+  const wasWere = (p === 'i' || p === 'e' || p === 'hi') ? 'was' : 'were';
+  if (eng === 'be able to') return `${SUBJ[p]} ${wasWere} able to`;
+  const gerund = eng.includes('/') ? eng.split('/').map(toGerund).join('/') : toGerund(eng);
+  return `${SUBJ[p]} ${wasWere} ${gerund}`;
 }
 
 function toGerund(word: string): string {
@@ -102,12 +113,6 @@ function toGerund(word: string): string {
   if (word.endsWith('e') && !word.endsWith('ee')) return word.slice(0, -1) + 'ing';
   if (/^[a-z]*[^aeiou][aeiou][bgdlmnprt]$/.test(word)) return word + word.slice(-1) + 'ing';
   return word + 'ing';
-}
-
-function imperfEng(p: Person, eng: string): string {
-  const wasWere = (p === 'i' || p === 'e' || p === 'hi') ? 'was' : 'were';
-  const gerund = eng.includes('/') ? eng.split('/').map(toGerund).join('/') : toGerund(eng);
-  return `${SUBJ[p]} ${wasWere} ${gerund}`;
 }
 
 function condEng(p: Person, eng: string): string {
