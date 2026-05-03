@@ -24,42 +24,52 @@ function weight(correct: number, incorrect: number, streak: number, lastSeen: nu
 }
 
 export function getNextDrillItem(store: ScoreStore, excludeKey?: string, filterVerbId?: string): DrillItem {
-  const items: { item: DrillItem; w: number }[] = [];
+  const candidates: { item: DrillItem; weight: number }[] = [];
+
+  const tenses = verbModuleConfig.tenses as readonly Tense[];
+  const registers = verbModuleConfig.registers as readonly Register[];
+  const persons: Person[] = ['i', 'ti', 'e', 'hi', 'ni', 'chi', 'nhw'];
 
   for (const verb of VERBS.filter(v => !filterVerbId || v.id === filterVerbId)) {
-    for (const tense of verbModuleConfig.tenses) {
-      for (const register of verbModuleConfig.registers) {
-        for (const { id: person } of verbModuleConfig.persons) {
+    for (const tense of tenses) {
+      for (const register of registers) {
+        for (const person of persons) {
           const key = `${verb.id}:${tense}:${register}:${person}`;
           if (key === excludeKey) continue;
-          const conj = verb.conjugations[register][tense][person as Person];
+
           const entry = getOrCreate(store, verb.id, tense, register, person);
           const w = weight(entry.correct, entry.incorrect, entry.streak, entry.lastSeen);
-          items.push({
+
+          const conj = verb.conjugations[register][tense][person];
+
+          candidates.push({
             item: {
               verbId: verb.id,
               verbNoun: verb.verbNoun,
               verbEnglish: verb.english,
               tense,
               register,
-              person: person as Person,
-              prompt: `${conj.english}`,
+              person,
+              prompt: conj.english,
               answer: conj.welsh,
               alternatives: conj.alternatives,
             },
-            w,
+            weight: w,
           });
         }
       }
     }
   }
 
-  // Weighted random selection
-  const totalWeight = items.reduce((sum, i) => sum + i.w, 0);
+  // Weighted random selection — higher weight = more likely to be chosen
+  const totalWeight = candidates.reduce((sum, c) => sum + c.weight, 0);
   let rand = Math.random() * totalWeight;
-  for (const { item, w } of items) {
-    rand -= w;
-    if (rand <= 0) return item;
+
+  for (const c of candidates) {
+    rand -= c.weight;
+    if (rand <= 0) return c.item;
   }
-  return items[0].item;
+
+  // Fallback: return last candidate
+  return candidates[candidates.length - 1].item;
 }

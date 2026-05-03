@@ -16,12 +16,22 @@ const PERSONS = [
   { id: 'nhw', label: 'they (nhw)' },
 ] as const;
 
-const TENSES = ['present', 'past', 'future'] as const;
-const TENSE_LABELS = { present: 'Presennol', past: 'Gorffennol', future: 'Dyfodol' };
-const TENSE_COLOURS = {
+const TENSES = ['present', 'imperfect', 'past', 'future', 'conditional'] as const;
+
+const TENSE_LABELS: Record<string, string> = {
+  present: 'Presennol',
+  imperfect: 'Amherffaith',
+  past: 'Gorffennol',
+  future: 'Dyfodol',
+  conditional: 'Amodol',
+};
+
+const TENSE_COLOURS: Record<string, string> = {
   present: 'text-[#34d399]',
+  imperfect: 'text-[#60a5fa]',
   past: 'text-[#a78bfa]',
   future: 'text-[#e94560]',
+  conditional: 'text-[#f59e0b]',
 };
 
 export default function ConjugationTable({ verb }: Props) {
@@ -32,27 +42,41 @@ export default function ConjugationTable({ verb }: Props) {
           <h3 className="text-slate-400 uppercase text-xs tracking-widest mb-4 font-semibold">
             {register === 'informal' ? 'Anffurfiol — Informal' : 'Ffurfiol — Formal'}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {TENSES.map(tense => (
-              <div key={tense} className="bg-[#16213e] border border-[#0f3460] rounded-2xl p-5">
-                <h4 className={`font-bold text-sm uppercase tracking-wide mb-4 ${TENSE_COLOURS[tense]}`}>
-                  {TENSE_LABELS[tense]}
-                </h4>
-                <table className="w-full text-sm">
-                  <tbody>
-                    {PERSONS.map(({ id, label }) => {
-                      const conj = verb.conjugations[register][tense][id];
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr>
+                  <th className="text-left text-slate-500 pb-2 pr-4 font-normal">Person</th>
+                  {TENSES.map(t => (
+                    <th key={t} className={`text-left pb-2 pr-4 font-semibold ${TENSE_COLOURS[t]}`}>
+                      {TENSE_LABELS[t]}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {PERSONS.map(({ id, label }) => (
+                  <tr key={id} className="border-t border-[#0f3460]/30">
+                    <td className="py-3 pr-4 text-slate-400 whitespace-nowrap">{label}</td>
+                    {TENSES.map(t => {
+                      const conj = verb.conjugations[register][t][id as keyof typeof verb.conjugations.informal.present];
                       return (
-                        <tr key={id} className="border-b border-[#0f3460] last:border-0">
-                          <td className="py-2 text-slate-500 w-24 shrink-0">{conj.english}</td>
-                          <td className="py-2 text-white font-medium">{conj.welsh}</td>
-                        </tr>
+                        <td key={t} className="py-3 pr-4">
+                          <span className="text-white block">{conj.welsh}</span>
+                          <span className="text-slate-500 text-xs block">{conj.english}</span>
+                          {conj.alternatives && conj.alternatives.length > 0 && (
+                            <span className="text-slate-600 text-xs block italic">
+                              also: {conj.alternatives.join(', ')}
+                            </span>
+                          )}
+                        </td>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
-            ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       ))}

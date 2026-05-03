@@ -4,7 +4,14 @@ export const verbModuleConfig = {
   titleEnglish: 'Verbs',
   description: 'Drill Welsh verb conjugations across tenses and registers',
   icon: '🔤',
-  tenses: ['present', 'past', 'future'] as const,
+  tenses: ['present', 'imperfect', 'past', 'future', 'conditional'] as const,
+  tenseLabels: {
+    present: 'Presennol (Present)',
+    imperfect: 'Amherffaith (Imperfect)',
+    past: 'Gorffennol (Past)',
+    future: 'Dyfodol (Future)',
+    conditional: 'Amodol (Conditional)',
+  },
   registers: ['informal', 'formal'] as const,
   persons: [
     { id: 'i',   label: 'I (i)' },
