@@ -37,7 +37,8 @@ export default function DrillPage() {
     if (!currentItem) return;
 
     const revealed = userInput === '';
-    const correct = revealed ? false : checkAnswer(userInput, currentItem.answer, currentItem.alternatives);
+    const check = revealed ? null : checkAnswer(userInput, currentItem.answer, currentItem.alternatives);
+    const correct = check ? check.result !== 'wrong' : false;
 
     const fb: FeedbackResult = {
       correct,
