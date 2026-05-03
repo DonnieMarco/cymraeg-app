@@ -40,6 +40,24 @@ const INF_FUT: Record<Person, string> = {
   ni: "byddwn ni'n", chi: "byddwch chi'n", nhw: "byddan nhw'n",
 };
 
+function thirdPersonPresent(english: string): string {
+  if (english === 'be able to') return 'is able to';
+  if (english === 'wait/stay') return 'waits/stays';
+  if (english === 'do') return 'does';
+  if (english === 'go') return 'goes';
+  if (english === 'have') return 'has';
+  if (english === 'come') return 'comes';
+  if (english.includes('(')) {
+    const [verb, rest] = english.split('(');
+    return verb.trim() + 's (' + rest;
+  }
+  return english + 's';
+}
+
+function presentEnglish(p: Person, english: string): string {
+  return (p === 'e' || p === 'hi') ? `${SUBJ[p]} ${thirdPersonPresent(english)}` : `${SUBJ[p]} ${english}`;
+}
+
 function periph(
   id: string,
   verbNoun: string,
@@ -54,7 +72,7 @@ function periph(
       informal: {
         present: Object.fromEntries(PERSONS.map(p => [p, {
           welsh: `${INF_PRES[p]} ${verbNoun}`,
-          english: `${SUBJ[p]} ${english}`,
+          english: presentEnglish(p, english),
         }])) as ConjugationTable,
         past: Object.fromEntries(PERSONS.map(p => [p, {
           welsh: pastForms[p],
@@ -69,7 +87,7 @@ function periph(
       formal: {
         present: Object.fromEntries(PERSONS.map(p => [p, {
           welsh: `${FORM_PRES[p]} ${verbNoun}`,
-          english: `${SUBJ[p]} ${english}`,
+          english: presentEnglish(p, english),
         }])) as ConjugationTable,
         past: Object.fromEntries(PERSONS.map(p => [p, {
           welsh: pastForms[p],
@@ -93,11 +111,11 @@ const bod: Verb = {
       present: {
         i:   { welsh: 'dw i',       english: 'I am',        alternatives: ['rydw i'] },
         ti:  { welsh: 'rwyt ti',    english: 'you are',     alternatives: ['wyt ti'] },
-        e:   { welsh: 'mae e',      english: 'he is',       alternatives: ['mae fo'] },
+        e:   { welsh: 'mae e',      english: 'he is',       alternatives: ['mae fo', 'mae o'] },
         hi:  { welsh: 'mae hi',     english: 'she is' },
         ni:  { welsh: 'dyn ni',     english: 'we are',      alternatives: ['rydyn ni'] },
         chi: { welsh: 'dych chi',   english: 'you are',     alternatives: ['rydych chi'] },
-        nhw: { welsh: 'maen nhw',   english: 'they are' },
+        nhw: { welsh: 'maen nhw',   english: 'they are',    alternatives: ['maent nhw'] },
       },
       past: {
         i:   { welsh: 'roeddwn i',    english: 'I was' },
@@ -173,9 +191,8 @@ const gorffen = periph('gorffen', 'gorffen', 'finish',     { i:'gorffennais i', 
 const darllen = periph('darllen', 'darllen', 'read',       { i:'darllenes i',   ti:'darllenest ti',  e:'darllenodd e', hi:'darllenodd hi', ni:'darllenon ni', chi:'darllenoch chi',nhw:'darllenon nhw' }, 'read',        { i:['darllenais i'] });
 const meddwl  = periph('meddwl',  'meddwl',  'think',      { i:'meddyliais i',  ti:'meddyliaist ti', e:'meddyliodd e', hi:'meddyliodd hi', ni:'meddylion ni', chi:'meddylioch chi',nhw:'meddylion nhw' }, 'thought',     { i:['meddyles i'] });
 
-// gwybod/adnabod use imperfect of bod for past (standard in colloquial Welsh)
-const gwybod  = periph('gwybod',  'gwybod',  'know (fact)',   { i:"roeddwn i'n gwybod",  ti:"roeddet ti'n gwybod",  e:"roedd e'n gwybod",  hi:"roedd hi'n gwybod",  ni:"roedden ni'n gwybod",  chi:"roeddech chi'n gwybod",  nhw:"roedden nhw'n gwybod"  }, 'knew');
-const adnabod = periph('adnabod', 'adnabod', 'know (person)', { i:"roeddwn i'n adnabod", ti:"roeddet ti'n adnabod", e:"roedd e'n adnabod", hi:"roedd hi'n adnabod", ni:"roedden ni'n adnabod", chi:"roeddech chi'n adnabod", nhw:"roedden nhw'n adnabod" }, 'knew');
+const gwybod  = periph('gwybod',  'gwybod',  'know (fact)',   { i:"roeddwn i'n gwybod",  ti:"roeddet ti'n gwybod",  e:"roedd e'n gwybod",  hi:"roedd hi'n gwybod",  ni:"roedden ni'n gwybod",  chi:"roeddech chi'n gwybod",  nhw:"roedden nhw'n gwybod"  }, 'knew (fact)');
+const adnabod = periph('adnabod', 'adnabod', 'know (person)', { i:"roeddwn i'n adnabod", ti:"roeddet ti'n adnabod", e:"roedd e'n adnabod", hi:"roedd hi'n adnabod", ni:"roedden ni'n adnabod", chi:"roeddech chi'n adnabod", nhw:"roedden nhw'n adnabod" }, 'knew (person)');
 
 export const VERBS: Verb[] = [
   bod, mynd, dod, gwneud, cael, hoffi, gallu,

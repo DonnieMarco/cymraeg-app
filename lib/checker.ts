@@ -2,16 +2,17 @@ function normalise(s: string): string {
   return s
     .toLowerCase()
     .trim()
-    .replace(/'/g, "'")   // normalise smart apostrophes
     .replace(/'/g, "'")
-    .replace(/\s+/g, ' ') // collapse multiple spaces
-    .replace(/[.,!?]$/, ''); // strip trailing punctuation
+    .replace(/'/g, "'")
+    .replace(/\s+/g, ' ')
+    .replace(/[.,!?]$/, '');
 }
 
-// Common present tense prefix swaps — Duolingo vs formal
 const EQUIV_PREFIXES: [string, string][] = [
   ["dw i'n", "rydw i'n"],
   ["dw i'n", "rwy'n"],
+  ["dwi'n", "dw i'n"],
+  ["dwi'n", "rydw i'n"],
   ["rwyt ti'n", "wyt ti'n"],
   ["dyn ni'n", "rydyn ni'n"],
   ["dyn ni'n", "ryn ni'n"],
@@ -23,6 +24,8 @@ const EQUIV_PREFIXES: [string, string][] = [
   // without yn
   ["dw i", "rydw i"],
   ["dw i", "rwy"],
+  ["dwi", "dw i"],
+  ["dwi", "rydw i"],
   ["rwyt ti", "wyt ti"],
   ["dyn ni", "rydyn ni"],
   ["dyn ni", "ryn ni"],
@@ -38,11 +41,13 @@ function expandVariants(answer: string): string[] {
   const variants = new Set<string>([norm]);
 
   for (const [a, b] of EQUIV_PREFIXES) {
-    if (norm.startsWith(normalise(a))) {
-      variants.add(norm.replace(normalise(a), normalise(b)));
+    const na = normalise(a);
+    const nb = normalise(b);
+    if (norm.startsWith(na)) {
+      variants.add(nb + norm.slice(na.length));
     }
-    if (norm.startsWith(normalise(b))) {
-      variants.add(norm.replace(normalise(b), normalise(a)));
+    if (norm.startsWith(nb)) {
+      variants.add(na + norm.slice(nb.length));
     }
   }
 
