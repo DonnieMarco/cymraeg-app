@@ -1,10 +1,14 @@
 // data/topic-registry.ts
 import { TopicModule } from '../types/topic';
 import possessives from './modules/possessives';
+import presentBod from './modules/present-bod';
+import greetings from './modules/greetings';
 
 // Add new topic modules here — import and add to the array
 export const TOPIC_REGISTRY: TopicModule[] = [
   possessives,
+  presentBod,
+  greetings,
 ];
 
 // Stub entries for tiles that aren't built yet
@@ -24,8 +28,6 @@ export const TOPIC_STUBS: TopicStub[] = [
   { id: 'commands', slug: 'commands', title: 'Gorchymyn', titleEn: 'Commands', icon: '📢', cefr: 'A1', status: 'coming_soon' },
   { id: 'rhaid', slug: 'rhaid', title: 'Rhaid i fi', titleEn: 'Must / Have to', icon: '⚠️', cefr: 'A1', status: 'coming_soon' },
   { id: 'cyn-ar-ol', slug: 'cyn-ar-ol', title: 'Cyn / Ar ôl', titleEn: 'Before / After', icon: '🔄', cefr: 'A1', status: 'coming_soon' },
-  { id: 'present-bod', slug: 'present-bod', title: 'Bod (presennol)', titleEn: 'Present Tense (bod)', icon: '📖', cefr: 'A1', status: 'reference' },
-  { id: 'greetings', slug: 'greetings', title: 'Cyfarchion', titleEn: 'Greetings', icon: '👋', cefr: 'A1', status: 'reference' },
   { id: 'weather', slug: 'weather', title: 'Y Tywydd', titleEn: 'Weather', icon: '🌦️', cefr: 'A1', status: 'coming_soon' },
   { id: 'opinions', slug: 'opinions', title: 'Barn', titleEn: 'Opinions', icon: '💬', cefr: 'A2', status: 'coming_soon' },
   { id: 'conditional', slug: 'conditional', title: 'Amodol', titleEn: 'Conditional', icon: '🤔', cefr: 'B1', status: 'coming_soon' },
